@@ -1,31 +1,32 @@
-| Written by Shin Noir.
+|# Written by Shin Noir.
 
 Sub Main
     
-    | Who should the rogue assist? Tank name
+    |# Who should the rogue assist? Tank name
     /declare tankName string outer Xackery
 
-    | Donor BP name and click timer
+    |# Donor BP name and click timer
     /declare bpName string outer TriXzin, Guard of the King
     /declare bpClick timer outer 0
     /declare bpClickCooldown string outer 210s
     /declare bpNumMobs int outer 2
     /declare bpClassName string outer ROG
-    | Engage Only if HP is above this
+    |# Engage Only if HP is above this
     /declare engageHP int outer 80
-    | Engage only if mob is closer than this range. This is so if your melee gets too far away, he won't engage something across the zone.
+    |# Engage only if mob is closer than this range. This is so if your melee gets too far away, he won't engage something across the zone.
     /declare engageDistance int outer 50
 
     /g Started Rogue Script v 0.3f
-    |You shouldn't need to edit anything below, but feel free to look over any comments for tweaks
+
+    |# You shouldn't need to edit anything below, but feel free to look over any comments for tweaks
     :Loop
 
-    | Uncomment the below line if you want stuff on your cursor to be auto inventoried (rogue pickpocket)
+    |# Uncomment the below line if you want stuff on your cursor to be auto inventoried (rogue pickpocket)
     | /if (${Cursor.ID} ) /autoinv
 
 	/if (${Me.PctHPs} > ${engageHP} && ${Target.Type.Equal[NPC]} && ${Target.Distance}< ${engageDistance} && !${Me.Combat}) {
         /attack on
-        |You can take this bottom line out, but it helps clean up the "stick behind target" logic
+        |# You can take this bottom line out, but it helps clean up the "stick behind target" logic
         /stick 10 behind id ${Target.ID}
         /if (${Target.ID} != ${Me.ID} && ${SpawnCount[NPC radius 40]} > ${bpNumMobs} && ${Me.Class.ShortName.Equal[${bpClassName}]}) {          
             /if (${bpClick}==0) {
@@ -46,7 +47,7 @@ Sub Main
         }
     }
 
-    | When you aren't engaged, keep yourself stuck on the tank.
+    |# When you aren't engaged, keep yourself stuck on the tank.
     /if (${Stick.Status.Equal[OFF]}) {
         /stick 15 id ${Spawn[pc ${tankName}].ID}
     }
