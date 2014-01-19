@@ -1,0 +1,120 @@
+|# Made by Shin Noir. Really simple healbot for clerics primarily
+#event ExpCount "#*#You gain party#*#"
+#event ExpCount "#*#You gained raid#*#" 
+
+Sub Main
+	|# Change the lines I'm noting below here!
+	|# At this % HP, it will heal a group member. Default: 90
+	/declare healPct int outer 90
+	|# Use harmony of spirit when idle? (Mana regen). set to false if you don't like it
+	/declare useHoS bool outer true	
+	|# When 1 target needing heal, use this
+	/declare healSpell string Faithful Light Rk. I
+	|# When 2+ people, use this
+	/declare groupSpell string Word of Strategy
+
+	|# These are temporary stuffs, don't change
+	/declare donorTimer timer outer
+	/declare donorTimer2 timer outer
+	/declare divineTimer timer outer
+	/declare priorityTarget string outer
+	/declare epicTimer timer outer
+	/declare curHealTarget string local
+	/declare curPlayer string local
+	/declare curSpell string local
+	/declare i int outer
+	/declare healCount int outer
+	/declare isHealing bool outer
+	/declare spamCount int outer
+	/declare expCount int outer
+	|# End of temporary stuffs
+
+	|# You can remove this if you don't like the spam.
+	/g Robot ${Me.Name} started v. 0.4f. I'll heal group within 250m from me. (And spam when you aren't in range)
+
+	:Loop
+	/doevents
+	/varset healCount 0
+	/varset curHealTarget
+	/for i 0 to ${Group.Members}
+		/varset curPlayer ${Group.Member[${i}]}
+		/if (${Bool[${Spawn[pc ${curPlayer}]}]} && ${Spawn[pc ${curPlayer}].Distance} < 250 && ${Spawn[pc ${curPlayer}].PctHPs} < ${healPct}) {
+			/varcalc healCount ${healCount}+1
+			/varset curHealTarget ${curPlayer}			
+		} else /if (${Bool[${Spawn[pc ${curPlayer}]}]} && ${Spawn[pc ${curPlayer}].Distance} > 249 && ${Spawn[pc ${curPlayer}].PctHPs} < ${healPct}) {
+			/if (${spamCount} < 3) {
+				/g You're out of range ${curPlayer} by ${Spawn[pc ${curPlayer}].Distance}m, run to me (${Spawn[pc ${curPlayer}].PctHPs}% HPs).
+				/varcalc spamCount ${spamCount}+1
+			}
+		}
+	/next i
+
+	||Idle Actions
+
+	|#Use Harmony of spirit if mana is < 90
+	/if (${healCount} == 0 && ${useHoS}) {
+		/varset curSpell Harmony of Spirit III
+		/if (${Me.SpellReady[${curSpell}]} && ${Me.PctMana}<90 && !${Me.Buff[${curSpell}].ID}) {
+			/casting "${curSpell}" -maxtries|5
+		}
+	}
+
+	|# Heal actions
+	/if (${healCount}>1 && ${Cast.Ready}) {
+		|Donor1 Logic
+		/if (${donorTimer} == 0 && ${FindItemCount[Flindara, Beacon of Light]}) {
+			/g Archon Group -> ${curHealTarget} (${Spawn[pc ${curHealTarget}].PctHPs}% HP) ${healCount}A|${SpawnCount[NPC radius 40]}E|${expCount}T <-
+			/casting "Flindara, Beacon of Light" -targetid|${Spawn[pc ${curHealTarget}].ID} -maxtries|5
+			/varset donorTimer 27s
+
+		|# Donor2 Logic (Should be just a generic AE heal)
+		} else /if (${donorTimer2} == 0 && ${FindItemCount[Hammer of the High Priest]}) {
+			/g AE Heal 70m -> ${curHealTarget} (${Spawn[pc ${curHealTarget}].PctHPs}% HP) ${healCount}A|${SpawnCount[NPC radius 40]}E|${expCount}T <-		
+			/casting "Hammer of the High Priest" -targetid|${Spawn[pc ${curHealTarget}].ID} -maxtries|5
+			/varset donorTimer2 10s
+		|# Tactics Logic
+
+		} else {
+			|Group Heal! If you don't have Word of Strategy, change this curSpell line here.
+			/varset curSpell ${groupSpell}
+			/if (${Me.SpellReady[${curSpell}]} && ${Me.PctMana}<90 && !${Me.Buff[${curSpell}].ID}) {
+				/casting "${curSpell}" -maxtries|5
+				/g Word of Strategy -> ${curHealTarget} (${Spawn[pc ${curHealTarget}].PctHPs}% HP) ${healCount}A|${SpawnCount[NPC radius 40]}E|${expCount}T <-
+			}			
+		}
+		/varset spamCount 0
+	}
+
+	/if (${healCount} == 1 && ${Cast.Ready}) {
+		|# Epic Logic
+		/if (${epicTimer} == 0 && ${FindItemCount[Ancient Frozen Aegis of Divinity]}) {
+			/g Epic Click -> ${curHealTarget} (${Spawn[pc ${curHealTarget}].PctHPs}% HP) ${healCount}A|${SpawnCount[NPC radius 40]}E|${expCount}T <-		
+			/casting "Ancient Frozen Aegis of Divinity" -targetid|${Spawn[pc ${curHealTarget}].ID} -maxtries|5
+			/varset epicTimer 60s
+
+		|# Donor1 Logic
+		} else /if (${donorTimer} == 0 && ${FindItemCount[Flindara, Beacon of Light]}) {
+			/g Archon Group -> ${curHealTarget} (${Spawn[pc ${curHealTarget}].PctHPs}% HP) ${healCount}A|${SpawnCount[NPC radius 40]}E|${expCount}T <-		
+			/casting "Flindara, Beacon of Light" -targetid|${Spawn[pc ${curHealTarget}].ID} -maxtries|5
+			/varset donorTimer 27s
+		|# Divine Intervention Logic
+		} else /if (${divineTimer} == 0 && ${FindItemCount[Hammer of the High Priest]}) {
+			/g Divine Arb Group -> ${curHealTarget} (${Spawn[pc ${curHealTarget}].PctHPs}% HP) ${healCount}A|${SpawnCount[NPC radius 40]}E|${expCount}T <-		
+			/casting "Divine Arbitration" -targetid|${Spawn[pc ${curHealTarget}].ID} -maxtries|5
+			/varset divineTimer 180s
+		|# Generic Heal Logic
+		} else {
+			|Spam Faithful light. change spell name to your preferred
+			/varset curSpell ${healSpell}
+			/g Healing -> ${curHealTarget} (${Spawn[pc ${curHealTarget}].PctHPs}% HP) ${healCount}A|${SpawnCount[NPC radius 40]}E|${expCount}T <-		
+			/casting "Faithful Light Rk. I" -targetid|${Spawn[pc ${curHealTarget}].ID} -maxtries|5
+		}
+		/varset spamCount 0
+	}
+	/delay 1s
+	/goto :Loop
+/return
+
+Sub Event_ExpCount
+	/varcalc expCount ${expCount}+1
+/return

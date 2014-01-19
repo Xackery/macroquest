@@ -1,4 +1,8 @@
 |# Written by Shin Noir.
+|# Note this script is expermiental. I DO NOT recommend using it for any noteworthy fights.
+|# I originally created it with the intent of having a lazy-mode farm script while killing trash.
+|# It simply sticks to the tank, assists the tank, and kills targets. 
+|# It will click BP (can be swapped with another disc) when > bpNumMobs.
 
 Sub Main
     
