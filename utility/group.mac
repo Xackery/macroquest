@@ -1,0 +1,24 @@
+|# By Shin Noir
+|# This script simply groups up a party.
+
+Sub Main
+  /declare groupList[5] string outer
+  |#Pretty straight forward, change these 5 people to your group
+  /varset groupList[1] Xackery
+  /varset groupList[2] Rynn
+  /varset groupList[3] Wynn
+  /varset groupList[4] Wynyn
+  /varset groupList[5] Zorroz
+  |#Stuff you don't need to change
+  /declare i int local
+  /echo Started group
+  /bcaa //disband
+  /bcaa //raiddisband
+  /delay 2s
+  
+  /for i 1 to ${groupList.Size}
+    /target ${groupList[${i}]}
+    /invite
+    /delay 0.5s
+  /next i
+/return

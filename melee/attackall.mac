@@ -2,7 +2,7 @@
 |# This is a script that can be used on a tank. It's basically.. attack anything within a radius of tank.
 |# To stop it from attacking, tap F1 (target self). This is some times needed since untargettables will be spam-targetted if nearby even on fail.
 |# E.g. I will run around gathering many mobs while targetting myself, and when I get to where I want to fight, I press escape (to untarget self)
-|# It doesn't auto move, but does track your cash earnings.
+|# It doesn't auto move, nor loots.. it literally just attacks all stuff near him
 
 Sub Main
 	/echo Started attackall.mac as a ${Me.Class.Name}

@@ -1,0 +1,28 @@
+|# By Shin Noir
+|# This takes your party and makes guild hall casts for each dude, telling them to enter.
+Sub Main
+	|#change to your clicky gh item
+	/declare ghItem string outer Dark Charm of Travel 
+	|# turn off other people's scripts
+	/bca //mac .
+	/bca //stick off
+
+	/echo Starting GH portal for group
+	
+	/declare curPlayer string local
+	/declare i int outer
+	/for i 0 to ${Group.Members}
+		/varset curPlayer ${Group.Member[${i}]}
+		/if (${Bool[${Spawn[pc ${curPlayer}]}]} && ${Spawn[pc ${curPlayer}].Distance} < 200 && !${curPlayer.Equal[Xackery]}) {
+			/echo ${curPlayer}
+			/delay 5s (${Cast.Ready})
+			/casting "Dark Charm of Travel"|charm
+			/delay 5s (${Cast.Ready})
+			/bct ${curPlayer} //target id ${Spawn[npc Xack].ID}
+			/bct ${curPlayer} //stick 5	
+			/delay 2s
+			/bct ${curPlayer} //say enter
+		}
+	/next i	
+	/casting "${ghItem}"|charm	
+/return 
