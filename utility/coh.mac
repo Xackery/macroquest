@@ -1,6 +1,7 @@
 |# Written by Shin noir.
 |# Super simple CoH group\raid script. Determines if you're in a raid or group, and summons everyone
 |# Set cohRange to determine how far someone has to be to get summoned.
+|# If you dont' want to summon someone it announces, just manually duck to skip them!
 
 Sub Main
 
