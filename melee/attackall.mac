@@ -1,0 +1,26 @@
+|# Written by Shin Noir
+|# This is a script that can be used on a tank. It's basically.. attack anything within a radius of tank.
+|# To stop it from attacking, tap F1 (target self). This is some times needed since untargettables will be spam-targetted if nearby even on fail.
+|# It doesn't auto move, but does track your cash earnings.
+
+Sub Main
+	/echo Started attackall.mac as a ${Me.Class.Name}
+	:Loop
+    /delay 1s
+    /doevents
+ 	/if (${Target.ID} != ${Me.ID} && ${SpawnCount[NPC radius 40]} > 0) { 		
+		:KillMobs
+		/if (${Spawn[NPC los radius 40].LineOfSight}) {
+			/if (!${Melee.Enrage}) /attack on
+			 /if (${Spawn[NPC los  radius 40].ID} != ${Target.ID}) {
+				/bc [${Macro.RunTime}] Looking for trouble, ~${SpawnCount[NPC los radius 40]} mobs in range
+				/target id ${Spawn[NPC los radius 40].ID}
+				/stick 10
+				/face
+				/killthis
+				/delay 5s ${Spawn[NPC los radius 40].ID}
+			}
+		}
+	}
+    /goto :Loop
+/return
