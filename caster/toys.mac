@@ -1,0 +1,100 @@
+|# Made by Shin Noir
+|# This script is VERY experimental. Except bugs
+|# REQUIRES a free bag slot. I usually keep my bottom right one open for the summoned bag.
+|# If the bag isnt' there, it bugs and does odd stuff, but doesn't do anything crazy.
+|# It has a large impact based on lag, but it's really straight forward.
+|# I'm not responsible if somehow you get an item of note deleted (though it never has done that for me)
+
+Sub Main
+	/stick 5
+	/delay 2s
+	/casting "Grotesque Girdle" -maxtries|2
+	/delay 5s
+	/autoinv
+
+	/call PickupInventoryItem "Summoned: Burning Fear"
+	/delay 1s
+	/click left target
+	/delay 10s (${Window[GiveWnd].Open})
+	/call PickupInventoryItem "Summoned: Fearblade"
+	/click left target
+	/call PickupInventoryItem "Summoned: Muzzle of Fear"
+	/click left target
+	/call PickupInventoryItem "Summoned: Fear Belt"
+	/click left target    
+	/delay 10s (${Window[GiveWnd].Open})
+	/call ClickWindowButton Givewnd GVW_Give_Button
+	/delay 5s (${Window[Givewnd]}==0)
+
+	/call PickupInventoryItem "Fear Breastplate"
+	/click left target
+	/delay 10s (${Window[GiveWnd].Open})
+	/call PickupInventoryItem "Fear Plate Greaves"
+	/click left target
+
+	/call PickupInventoryItem "Fear Plate Helm"
+	/click left target
+
+	/call PickupInventoryItem "Fear Plate Vambraces"
+	/click left target
+
+	/delay 10s (${Window[GiveWnd].Open})
+	/call ClickWindowButton Givewnd GVW_Give_Button
+	/delay 5s (${Window[Givewnd]}==0)
+	/call PickupInventoryItem "Phantom Satchel"
+	/destroy
+	/stick off
+/return
+
+
+Sub PickupInventoryItem(itemName)
+   /declare mypack   string local
+   /declare myslot   string local
+   /if (${Cursor.ID}) {
+      /if (${Cursor.Name.Equal[${itemName}]})      /return
+      /autoinv
+      /delay 1s
+   }
+
+   /varset mypack ${FindItem[${itemName}].InvSlot.Pack}
+   /varset myslot ${FindItem[${itemName}].InvSlot}
+
+   /if (${myslot}==0) {
+      /echo No item by that name in inventory.
+      /return
+   }
+
+   /if (${myslot}<31) {
+      /nomodkey /ctrl /itemnotify ${FindItem[${itemName}].InvSlot} leftmouseup
+   } else /if (${mypack}) {
+      /if (!${Window[${InvSlot[${mypack}].Name}].Open}) /nomodkey /itemnotify ${mypack} rightmouseup
+      :WaitForBagOpen
+      /nomodkey /ctrl /itemnotify ${myslot} leftmouseup
+      /if (!${Cursor.ID})  /goto :WaitForBagOpen
+
+      /declare previousTarget   int   local
+      /varset previousTarget   ${Target.ID}
+      /keypress esc
+      /delay 1
+      /if (${previousTarget})      /target id ${previousTarget}
+   } else {
+      /nomodkey /itemnotify ${myslot} rightmouseup
+   }
+
+   /delay 10s (${Cursor.Name.Find[${itemName}]})
+/return
+
+Sub ClickWindowButton(windowName,button)
+   :waitforwindow
+   /if (!${Window[${windowName}].Open}) {
+      /delay 5s ${Window[${windowName}].Open}
+      /goto :waitforwindow
+   }
+
+   /if (${Window[${windowName}].Open}==0) {
+      /echo Specified window not detected open
+   }
+
+   /nomodkey /notify ${windowName} ${button} leftmouseup
+   /delay 1s
+/return

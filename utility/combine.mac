@@ -1,0 +1,101 @@
+|# Simple Combine Macro
+|# This isn't written by Shin Noir, but it's nice for tradeskill auto combining.
+
+#turbo 40
+#define DEBUG /echo
+
+|
+| Parameters
+| - inv       don't check free space
+| - skill=x   stop at x skill
+| - triv      stop when trivial
+|
+sub Main
+  /declare fCheckInventory bool outer TRUE
+  /declare fStopAtTrivial bool outer
+  /declare fStopAtSkill bool outer
+  /declare SkillValue int outer
+  /declare x int local
+
+  /echo Combine Macro Starting!
+
+  | Parse options
+  /for x 0 to 5
+    /if (${Param${x}.Find[inv]}) {
+      /varset fCheckInventory FALSE
+      /echo - Not checking inventory
+    } 
+    /if (${Param${x}.Find[skill]}) {
+      /if (${Param${x}.Arg[2,=].Length}) {
+        /varset fStopAtSkill TRUE
+        /varset SkillValue ${Param${x}.Arg[2,=]}
+        /echo - Stopping at skill ${SkillValue}
+      }
+    } 
+    /if (${Param${x}.Find[triv]}) {
+      /varset fStopAtTrivial TRUE
+      /echo - Stopping when trivial
+    }
+  /next x
+
+  
+  :main_loop
+  /if (${fCheckInventory} && !${Me.FreeInventory}) {
+    /echo No free inventory, ending!
+    /beep
+    /endmacro
+  }
+
+  /if (!${Window[TradeskillWnd].Open}) {
+    /echo Tradeskill Window not open, ending!
+    /endmacro
+  } else {
+    /if (${Cursor.ID}) /call Clear_Cursor
+    /delay 5s ${Window[TradeskillWnd].Child[COMBW_CombineButton].Enabled}
+    /nomodkey /notify TradeskillWnd CombineButton leftmouseup
+    /delay 2s ${Cursor.ID}
+    /if (${Cursor.ID}) /call Clear_Cursor
+  }
+  
+  /doevents
+  /goto :main_loop
+/return
+
+#event SkillUp "You have become better at #1#! (#2#)"
+sub Event_Skillup(Line,SkillName,SkillPoints)
+  /if (${fStopAtSkill} && ${SkillPoints}>=${SkillValue}) {
+    /echo Skill reached or exceeded, stopping!
+    /delay 1s ${Cursor.ID}
+    /if (${Cursor.ID}) /call Clear_Cursor
+    /beep
+    /endmacro
+  }
+/return
+
+#event Trivial "You can no longer advance your skill from making this item."
+sub Event_Trivial
+  /if (${fStopAtTrivial}) {
+    /echo Item is trivial, stopping
+    /delay 1s ${Cursor.ID}
+    /if (${Cursor.ID}) /call Clear_Cursor
+    /beep
+    /endmacro
+  }
+/return
+
+#event OutOfStuff "Sorry, but you don't have everything you need for this recipe in your general inventory."
+sub Event_OutOfStuff
+  /beep
+  /beep
+  /echo Out of ingredients
+  /endmacro
+/return
+
+sub Clear_Cursor
+  :start_clear
+  /if (${Cursor.ID}) {
+    /autoinventory
+    /delay 1s ${Cursor.ID}
+    /goto :start_clear
+  }
+/return
