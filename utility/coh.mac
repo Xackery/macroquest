@@ -1,0 +1,49 @@
+|# Written by Shin noir.
+|# Super simple CoH group\raid script. Determines if you're in a raid or group, and summons everyone
+|# Set cohRange to determine how far someone has to be to get summoned.
+
+Sub Main
+
+	|# Tweak this value to your lag/liking. It determines how fast it'll recast
+	/declare castDelay string outer 7s
+	|# This is how far someone has to be to get summoned
+	/declare cohRange int outer 200
+	|# This figures out what CoH item you have.
+	/declare cohItem string outer Arion, the Skull of the Ancient
+	/if (${FindItemCount[${cohItem}]} == 0) /varset cohItem Orb of the Crimson Bull
+	/if (${FindItemCount[${cohItem}]} == 0) /varset cohItem Call of the Hero
+
+	/if (${Me.Class.ShortName.Equal[BRD]}) /twist off
+	
+	/if (${Raid.Members} > 0) {
+		/rs Started CoH of Raid (v0.3f)
+	} else {
+		/g Started CoH of Group (v0.3f)
+	}
+
+	/declare curPlayer string local
+	/declare i int outer
+	/for i 0 to ${Raid.Members}
+		/varset curPlayer ${Raid.Member[${i}]}
+		/if (${Spawn[pc ${curPlayer}].Distance} > ${cohRange}) {
+			/rs COH -> ${curPlayer} <-
+			/casting "${cohItem}" -targetid|${Spawn[pc ${curPlayer}].ID}
+			/delay ${castDelay}
+		}
+	/next i
+	/if (${Raid.Members} < 1) {
+		/for i 0 to ${Group.Members}
+			/varset curPlayer ${Group.Member[${i}]}
+			/if (${Spawn[pc ${curPlayer}].Distance} > ${cohRange}) {
+				/g COH -> ${curPlayer} <-
+				/casting "${cohItem}" -targetid|${Spawn[pc ${curPlayer}].ID}
+				/delay ${castDelay}
+			}
+		/next i
+	}
+	/if (${Raid.Members} > 0) {
+		/rs Done with CoH
+	} else {
+		/g Done with CoH
+	}
+/return
