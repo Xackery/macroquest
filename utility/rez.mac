@@ -1,0 +1,24 @@
+|# By Shin Noir
+|# Rezzes Anyone within a radius specified, cycling corpses.
+|# To make the alias /rez, type in your MQ2 Window:
+|# /alias /rez /mac rez
+
+Sub Main
+	|# What item handles rezzing?
+	/declare rezItem string outer Staff of the Earthcrafter
+	|# How far away can the rez item be clicked?
+	/declare rezRadius int outer 250
+
+	
+	/declare curTarget string outer
+	/declare i int outer
+	/for i 1 to ${SpawnCount[Corpse radius ${rezRadius}]}
+		/if (${NearestSpawn[${i}, Corpse radius ${rezRadius}].Name.Find[_]}) /next i
+		/varset curTarget ${NearestSpawn[${i}, Corpse radius ${rezRadius}]}
+		/echo Rezzing ${curTarget} casting ${rezItem} -targetid|${NearestSpawn[${i}, Corpse radius ${rezRadius}].ID}
+		/casting "${rezItem}" -targetid|${NearestSpawn[${i}, Corpse radius ${rezRadius}].ID}
+		/delay 5s (${Cast.Status.Equal[i]})
+		/delay 0.1s
+	/next i
+	/echo Done rezzing.
+/return
