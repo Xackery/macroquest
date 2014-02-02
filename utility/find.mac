@@ -1,0 +1,37 @@
+|# By Shin Noir
+|# This script will find an item in your inventory, bags, and bank. 
+|# You can extend the search to additional people listed below, if you use EQBC.
+|# I recommend typing below into your MQ window, to make a shorthand /find Item
+|# /alias find /mac find
+
+Sub Main(string srcSearch0, string srcSearch1, string srcSearch3, string srcSearch4, string srcSearch5, string srcSearch6, string srcSearch7, string srcSearch8)	
+	/declare groupList[6] string outer
+	|# Pretty straight forward, change these to people in eqbc
+	/varset groupList[1] Xackery
+	/varset groupList[2] Rynn
+	/varset groupList[3] Wynn
+	/varset groupList[4] Wynyn
+	/varset groupList[5] Zorroz
+	/varset groupList[6] Shin
+	|#Stuff you don't need to change
+	/declare i int local
+	/declare srcText string outer
+	/if (${Bool[${srcSearch0}]} && !${srcSearch0.Equal[Rawr]}) /varset srcText ${srcText} ${srcSearch0}
+	/if (${Bool[${srcSearch1}]}) /varset srcText ${srcText} ${srcSearch1}
+	/if (${Bool[${srcSearch2}]}) /varset srcText ${srcText} ${srcSearch2}
+	/if (${Bool[${srcSearch3}]}) /varset srcText ${srcText} ${srcSearch3}
+	/if (${Bool[${srcSearch4}]}) /varset srcText ${srcText} ${srcSearch4}
+	/if (${Bool[${srcSearch5}]}) /varset srcText ${srcText} ${srcSearch5}
+	/if (${Bool[${srcSearch6}]}) /varset srcText ${srcText} ${srcSearch6}
+	/if (${Bool[${srcSearch7}]}) /varset srcText ${srcText} ${srcSearch7}
+	/if (${Bool[${srcSearch8}]}) /varset srcText ${srcText} ${srcSearch8}
+	/echo Searching for "${srcText}" in Inventory and Bank
+	/if (${FindItemCount[${srcText}]} > 0) /bc Found ${FindItemCount[${srcText}]} ${FindItem[${srcText}]} in Inventory
+	/if (${FindItemBankCount[${srcText}]} > 0) /bc Found ${FindItemBankCount[${srcText}]} ${FindItemBank[${srcText}]} in Bank
+	/if (${srcSearch0.Equal[Rawr]}) /return
+	/if (!${EQBC.Connected}) /return
+	/for i 1 to ${groupList.Size}
+		/if (!${groupList[${i}].Equal[${Me.Name}]}) /bct ${groupList[${i}]} //mac find Rawr ${srcText}	    
+  	/next i
+  	/delay 1s
+/return
