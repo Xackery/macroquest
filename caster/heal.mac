@@ -79,7 +79,7 @@ Sub Main
 			/varset curSpell ${groupSpell}
 			/if (${Me.SpellReady[${curSpell}]} && ${Me.PctMana}<90 && !${Me.Buff[${curSpell}].ID}) {
 				/casting "${curSpell}" -maxtries|5
-				/g Word of Strategy -> ${curHealTarget} (${Spawn[pc ${curHealTarget}].PctHPs}% HP) ${healCount}A|${SpawnCount[NPC radius 40]}E|${expCount}T <-
+				/g ${curSpell} -> ${curHealTarget} (${Spawn[pc ${curHealTarget}].PctHPs}% HP) ${healCount}A|${SpawnCount[NPC radius 40]}E|${expCount}T <-
 			}			
 		}
 		/varset spamCount 0
