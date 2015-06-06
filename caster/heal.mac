@@ -107,7 +107,7 @@ Sub Main
 			|Spam Faithful light. change spell name to your preferred
 			/varset curSpell ${healSpell}
 			/g Healing -> ${curHealTarget} (${Spawn[pc ${curHealTarget}].PctHPs}% HP) ${healCount}A|${SpawnCount[NPC radius 40]}E|${expCount}T <-		
-			/casting "Faithful Light Rk. I" -targetid|${Spawn[pc ${curHealTarget}].ID} -maxtries|5
+			/casting "${curSpell}" -targetid|${Spawn[pc ${curHealTarget}].ID} -maxtries|5
 		}
 		/varset spamCount 0
 	}
