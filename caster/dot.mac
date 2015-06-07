@@ -1,8 +1,18 @@
 
+/declare i int outer
 Sub Main(string targetID)
 	/target id ${targetID}
-	/casting "Dot 1" -maxtries|5
-	/casting "Dot 2" -maxtries|5
+	/casting "Death March IV" -maxtries|5
+	/delay 2s
+	/delay 10s !${Bool[${Me.Casting}]}
+	/casting "Banshee Aura III" -maxtries|5
+	/delay 2s
+	/delay 10s !${Bool[${Me.Casting}]}
 	/casting "Dot 3" -maxtries|5
+	/delay 2s
+	/delay 10s !${Bool[${Me.Casting}]}
 	/casting "Dot 4" -maxtries|5
+	/delay 2s
+	/delay 10s !${Bool[${Me.Casting}]}
+	
 /return
