@@ -1,0 +1,8 @@
+
+Sub Main(string targetID)
+	/target id ${targetID}
+	/casting "Dot 1" -maxtries|5
+	/casting "Dot 2" -maxtries|5
+	/casting "Dot 3" -maxtries|5
+	/casting "Dot 4" -maxtries|5
+/return
