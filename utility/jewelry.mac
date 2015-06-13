@@ -1,0 +1,240 @@
+|# Simple Combine Macro
+|# This isn't written by Shin Noir, but it's nice for tradeskill auto combining.
+
+#turbo 40
+#define DEBUG /echo
+
+|
+| Parameters
+| - inv       don't check free space
+| - skill=x   stop at x skill
+| - triv      stop when trivial
+|
+sub Main
+  /declare fCheckInventory bool outer TRUE
+  /declare fStopAtTrivial bool outer
+  /declare fStopAtSkill bool outer
+  /declare SkillValue int outer
+  /declare x int local
+  /declare combines int local
+   /declare combineType string outer RoundCutLapisLazuli
+
+  /declare b int outer
+
+  /echo Combine Macro Starting!
+
+  | Parse options
+  /for x 0 to 5
+    /if (${Param${x}.Find[inv]}) {
+      /varset fCheckInventory FALSE
+      /echo - Not checking inventory
+    } 
+    /if (${Param${x}.Find[skill]}) {
+      /if (${Param${x}.Arg[2,=].Length}) {
+        /varset fStopAtSkill TRUE
+        /varset SkillValue ${Param${x}.Arg[2,=]}
+        /echo - Stopping at skill ${SkillValue}
+      }
+    } 
+    /if (${Param${x}.Find[triv]}) {
+      /varset fStopAtTrivial TRUE
+      /echo - Stopping when trivial
+    }
+  /next x
+
+  /if (${Bool[${FindItem[Round Cut Lapis Lazuli]}]}) {
+
+    /varset combineType ElectrumLapisLazuliRing
+  }
+
+  /echo Doing ${combineType}
+  
+  :main_loop
+  /if (${Me.Inventory[pack1].ID} != 17912 && ${combineType.Equal[RoundCutLapisLazuli]}) {
+
+    /echo Place a Reinforced Medicine Back into the top right slot.
+    /endmacro
+  }
+
+  /for b 1 to 8
+    /if (!${Bool[${Me.Inventory[Pack${b}].ID}]}) {
+
+      /echo Fill all your base inventory slots with bags or items before starting this script.
+      /endmacro
+    }
+  /next b
+
+  /for b 1 to ${Me.Inventory[pack1].Container}
+
+    /if (${Bool[${Me.Inventory[Pack1].Item[${b}].ID}]}) {
+
+      /if (${Me.Inventory[Pack1].Item[${b}].ID} == 95827 && ${combineType.Equal[RoundCutLapisLazuli]}) {
+
+        /next b
+      }
+
+      /echo Empty the top left bag before starting this script!
+      /endmacro
+    }
+  /next b
+
+  
+  /if (!${Window[MerchantWnd].Open} && ${combineType.Equal[RoundCutLapisLazuli]}) {
+    /echo Merchant Window not open, ending!
+    /endmacro
+  }
+
+  
+  /if (${Cursor.ID}) /call Clear_Cursor
+  /varcalc combines ${combines} + 1
+
+  |Combine 1
+  /if (${combineType.Equal[RoundCutLapisLazuli]}) {
+    /notify MerchantWnd MW_ItemList listselect ${Window[MerchantWnd].Child[MW_ItemList].List[Lapis Lazuli,2]}
+    /call GetQuantity MerchantWnd MW_Buy_Button 1
+  }
+
+  |Combine 2
+  /if (${combineType.Equal[ElectrumLapisLazuliRing]}) {
+
+    /if (!${Bool[${FindItem[Round Cut Lapis Lazuli]}]}) {
+      /echo No more Round Cut Lapis Lazuli
+      /endmacro
+    }
+    /if (!${Bool[${FindItem[Electrum Bar]}]}) {
+      /echo No more Electrum Bar
+      /endmacro
+    }
+
+    /call PutInBag 37807 1
+    /call PutInBag 16501 2
+
+  }
+
+  /combine Pack1
+  /echo Combines: ${combines}
+
+  /delay 1s ${Cursor.ID}
+  /if (${Cursor.ID}) /call Clear_Cursor
+  
+  
+  /doevents
+  /goto :main_loop
+/return
+
+
+Sub PutInBag(int ItemID, int SlotID) 
+  /echo ${ItemID}
+  /declare w int local
+  /for b 1 to 8
+    /for w 1 to ${Me.Inventory[pack${b}].Container}
+
+      /if (${FindItem[=${Me.Inventory[pack${b}].Item[${w}]}].ID} == ${ItemID}) {
+
+        /ctrl /itemnotify in pack${b} ${w} leftmouseup
+        /itemnotify in pack1 ${SlotID} leftmouseup
+        /delay 5 !${Bool[${Me.Inventory[pack${b}].Item[${SlotID}]}]}
+        /return
+      }
+    /next w
+  /next b
+/return
+
+Sub GetQuantity(string Wnd, string Ctrl, int Count)
+   /declare I int local
+   /declare J int local
+   /declare S string local
+   | /echo in GetQuantity...
+   /delay 1s
+   | /echo notifying ${Wnd} ${Ctrl} leftmouseup
+      /notify ${Wnd} ${Ctrl} leftmouseup
+      /delay 3s ( ${Window[QuantityWnd].Open} )
+
+      /for I 1 to 2
+         /varset J ${Window[QuantityWnd].Child[QTYW_SliderInput].Text.Length}
+         /if ( ${J} > 0 ) {
+            /keypress backspace chat
+            /delay 3s ( ${Window[QuantityWnd].Child[QTYW_SliderInput].Text.Length} < ${J} )
+            /varset I 1
+         } else {
+            /varset I 2
+         }
+      /next I
+
+      /varset S ${Count}
+      /for I 1 to ${S.Length}
+         /keypress ${S.Mid[${I},1]} chat
+         /delay 3s ( ${Window[QuantityWnd].Child[QTYW_SliderInput].Text.Length} == ${I} )
+      /next I
+
+   /delay 1s
+
+      /nomodkey /notify QuantityWnd QTYW_Accept_Button leftmouseup
+      /delay 3s ( !${Window[QuantityWnd].Open} )
+
+
+/return
+
+Sub SellItems
+  /declare e int local
+  /for e 1 to ${Me.Inventory[pack1].Container}
+
+    /if (${FindItem[=${Me.Inventory[pack1].Item[${e}]}].ID} == 37807) {
+
+      /itemnotify in pack1 ${e} leftmouseup
+      /delay 10 ${SelectedItem.ID}==${FindItem[=${Me.Inventory[pack1].Item[${e}]}].ID}
+      /notify MerchantWnd MW_Sell_Button leftmouseup
+      /if (${Window[QuantityWnd].Open}) {
+
+        /notify QuantityWnd QTYW_Accept_Button leftmouseup
+        /delay 10 !${Window[QuantityWnd].Open}
+      }
+      /delay 5 !${Bool[${Me.Inventory[pack1].Item[${e}]}]}
+    }
+  /next e
+/return
+#event SkillUp "You have become better at #1#! (#2#)"
+sub Event_Skillup(Line,SkillName,SkillPoints)
+  /if (${fStopAtSkill} && ${SkillPoints}>=${SkillValue}) {
+    /echo Skill reached or exceeded, stopping!
+    /delay 1s ${Cursor.ID}
+    /if (${Cursor.ID}) /call Clear_Cursor
+    /beep
+    /endmacro
+  }
+/return
+
+#event Trivial "You can no longer advance your skill from making this item."
+sub Event_Trivial
+  /if (${fStopAtTrivial}) {
+    /echo Item is trivial, stopping
+    /delay 1s ${Cursor.ID}
+    /if (${Cursor.ID}) /call Clear_Cursor
+    /beep
+    /endmacro
+  }
+/return
+
+#event OutOfStuff "Sorry, but you don't have everything you need for this recipe in your general inventory."
+sub Event_OutOfStuff
+  /beep
+  /beep
+  /echo Out of ingredients
+  /endmacro
+/return
+
+sub Clear_Cursor
+  :start_clear
+  /if (${Cursor.ID}) {
+    /if (${combineType.Equal[RoundCutLapisLazuli]}) {
+      /call SellItems     
+    }
+    /autoinventory
+    /if (${combineType.Equal[ElectrumLapisLazuliRing]} && ${Cursor.ID} == 12480) {
+      /destroy
+
+    }
+    /delay 1s ${Cursor.ID}
+    /goto :start_clear
+  }
+/return
