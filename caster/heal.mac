@@ -12,6 +12,7 @@ Sub Main
 	/declare healSpell string Faithful Light Rk. I
 	|# When 2+ people, use this
 	/declare groupSpell string Word of Strategy
+	
 
 	|# These are temporary stuffs, don't change
 	/declare donorTimer timer outer
@@ -31,6 +32,12 @@ Sub Main
 
 	|# You can remove this if you don't like the spam.
 	/g Robot ${Me.Name} started v. 0.4f. I'll heal group within 250m from me. (And spam when you aren't in range)
+
+	/if (!${Plugin[mq2cast]}) {
+
+		/echo MQ2Cast is needed to run this macro, type '/plugin mq2cast' to enable.
+		/endmacro
+	}
 
 	:Loop
 	/doevents
@@ -106,7 +113,7 @@ Sub Main
 		} else {
 			|Spam Faithful light. change spell name to your preferred
 			/varset curSpell ${healSpell}
-			/g Healing -> ${curHealTarget} (${Spawn[pc ${curHealTarget}].PctHPs}% HP) ${healCount}A|${SpawnCount[NPC radius 40]}E|${expCount}T <-		
+			/g ${curSpell} -> ${curHealTarget} (${Spawn[pc ${curHealTarget}].PctHPs}% HP) ${healCount}A|${SpawnCount[NPC radius 40]}E|${expCount}T <-		
 			/casting "${curSpell}" -targetid|${Spawn[pc ${curHealTarget}].ID} -maxtries|5
 		}
 		/varset spamCount 0
