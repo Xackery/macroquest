@@ -1,3 +1,10 @@
+Installing Macros
+==========
+Any files with a .mac extension can be installed and ran at will.
+* To run them, download the file and copy them to your Macroquest\Macros folder.
+* In game, type /mac <name>
+* If it runs, all scripts echo something at the start.
+
 macroquest
 ==========
 
