@@ -2,6 +2,11 @@
 |# This script simply groups up a party.
 
 Sub Main
+  /if (!${Plugin[mq2eqbc]}) {
+
+        /echo MQ2EQBC is needed to run this macro, type '/plugin mq2eqbc' to enable, or find the mq2eqbc.dll online if it isn't with your Macroquest.
+        /endmacro
+    }
   /declare groupList[5] string outer
   |#Pretty straight forward, change these 5 people to your group
   /varset groupList[1] Xackery

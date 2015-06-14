@@ -4,7 +4,13 @@
 |# I recommend typing below into your MQ window, to make a shorthand /find Item
 |# /alias find /mac find
 
-Sub Main(string srcSearch0, string srcSearch1, string srcSearch3, string srcSearch4, string srcSearch5, string srcSearch6, string srcSearch7, string srcSearch8)	
+Sub Main(string srcSearch0, string srcSearch1, string srcSearch3, string srcSearch4, string srcSearch5, string srcSearch6, string srcSearch7, string srcSearch8)
+	/if (!${Plugin[mq2eqbc]}) {
+
+        /echo MQ2EQBC is needed to run this macro, type '/plugin mq2eqbc' to enable, or find the mq2eqbc.dll online if it isn't with your Macroquest.
+        /endmacro
+    }
+
 	/declare groupList[6] string outer
 	|# Pretty straight forward, change these to people in eqbc
 	/varset groupList[1] Xackery

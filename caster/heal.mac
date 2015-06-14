@@ -35,7 +35,7 @@ Sub Main
 
 	/if (!${Plugin[mq2cast]}) {
 
-		/echo MQ2Cast is needed to run this macro, type '/plugin mq2cast' to enable.
+		/echo MQ2Cast is needed to run this macro, type '/plugin mq2cast' to enable, or find the mq2cast.dll online if it isn't with your Macroquest.
 		/endmacro
 	}
 

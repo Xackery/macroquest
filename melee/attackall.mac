@@ -5,6 +5,11 @@
 |# It doesn't auto move, nor loots.. it literally just attacks all stuff near him
 
 Sub Main
+    /if (!${Plugin[mq2moveutils]}) {
+
+        /echo MQ2MoveUtils is needed to run this macro, type '/plugin mq2moveutils' to enable, or find the mq2moveutils.dll online if it isn't with your Macroquest.
+        /endmacro
+    }
 	/echo Started attackall.mac as a ${Me.Class.Name}
 	:Loop
     /delay 1s

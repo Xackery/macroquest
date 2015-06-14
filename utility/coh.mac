@@ -4,7 +4,16 @@
 |# If you dont' want to summon someone it announces, just manually duck to skip them!
 
 Sub Main
+	/if (!${Plugin[mq2cast]}) {
 
+        /echo MQ2Cast is needed to run this macro, type '/plugin mq2cast' to enable, or find the mq2cast.dll online if it isn't with your Macroquest.
+        /endmacro
+    }
+    /if (!${Plugin[mq2exchange]}) {
+
+        /echo MQ2Exchange is needed to run this macro, type '/plugin mq2exchange' to enable, or find the mq2exchange.dll online if it isn't with your Macroquest.
+        /endmacro
+    }
 	|# Tweak this value to your lag/liking. It determines how fast it'll recast
 	/declare castDelay string outer 7s
 	|# This is how far someone has to be to get summoned

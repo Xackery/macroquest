@@ -6,6 +6,12 @@
 |# I'm not responsible if somehow you get an item of note deleted (though it never has done that for me)
 
 Sub Main
+   /if (!${Plugin[mq2cast]}) {
+
+      /echo MQ2Cast is needed to run this macro, type '/plugin mq2cast' to enable, or find the mq2cast.dll online if it isn't with your Macroquest.
+      /endmacro
+   }
+
 	/stick 5
 	/delay 2s
 	/casting "Grotesque Girdle" -maxtries|2
